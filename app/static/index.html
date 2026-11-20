@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LARPING APP - Solo Surveillance Productivity</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+  <!-- Fullscreen Grace Period Warning Overlay -->
+  <div id="warningOverlay" class="warning-overlay">
+    <div class="warning-card">
+      <div class="warning-title">⚠ SURVEILLANCE BREACH</div>
+      <p class="warning-msg">Tab-switching detected! Return your attention immediately.</p>
+      <div id="graceCountdown" class="grace-countdown">15</div>
+      <p class="warning-msg">If this counter reaches 0, the session will be marked as <strong style="color: var(--accent-red)">FAILED</strong>.</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">👁</div>
+      <div>
+        <div class="brand-title">LARPING APP</div>
+        <div class="brand-subtitle">// ROLEPLAY MONITORING PROTOCOL</div>
+      </div>
+    </div>
+
+    <nav>
+      <button id="navFocus" class="nav-btn active">Focus Chamber</button>
+      <button id="navDashboard" class="nav-btn">Dashboard & Streaks</button>
+      
+      <div id="userBadge" class="user-badge" style="display: none;">
+        <span id="userEmail">user@example.com</span>
+        <span id="streakBadge" class="streak-pill">🔥 0d</span>
+        <button id="btnLogout" class="nav-btn" style="padding: 2px 6px; font-size: 0.75rem;">Logout</button>
+      </div>
+
+      <button id="btnOpenAuth" class="btn btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;">Sign In</button>
+    </nav>
+  </header>
+
+  <!-- Main Content Areas -->
+  <main>
+    <!-- Focus Room Tab -->
+    <section id="focusTab" class="tab-pane active">
+      <div class="focus-grid">
+        
+        <!-- Surveillance Camera Feed Card -->
+        <div class="camera-card">
+          <div class="camera-header">
+            <div class="surveillance-tag">
+              <span class="rec-dot"></span>
+              <span id="streamStatus">STREAM: ACTIVE (LOCAL MIRROR)</span>
+            </div>
+            <button id="btnToggleCamera" class="nav-btn" style="font-size: 0.75rem;">Disable Camera</button>
+          </div>
+
+          <div class="camera-feed-container">
+            <video id="cameraFeed" autoplay playsinline muted></video>
+            <div class="feed-crosshairs"></div>
+            <div class="feed-overlay-hud">
+              <span>TARGET: SUBJECT_01</span>
+              <span id="hudTimestamp">00:00:00 UTC</span>
+              <span>PRIVACY: LOCAL_ONLY</span>
+            </div>
+          </div>
+
+          <div class="privacy-banner">
+            <span>🛡</span>
+            <span><strong>100% Privacy Guarantee:</strong> Video feed runs strictly in-browser via <code>getUserMedia()</code>. No video frames are ever recorded or uploaded to any server.</span>
+          </div>
+        </div>
+
+        <!-- Timer & Enforcement Card -->
+        <div class="timer-card">
+          <div class="timer-preset-group">
+            <button class="preset-btn active" data-minutes="25">Pomodoro (25m)</button>
+            <button class="preset-btn" data-minutes="50">Deep Work (50m)</button>
+            <button class="preset-btn" data-minutes="15">Sprint (15m)</button>
+            <button class="preset-btn" id="btnCustomTime">Custom</button>
+          </div>
+
+          <div id="timerDisplay" class="timer-display">25:00</div>
+          <div id="sessionStatus" class="session-status-text">SYSTEM READY // AWAITING INITIATION</div>
+
+          <div class="session-actions">
+            <button id="btnStartSession" class="btn btn-primary">
+              <span>▶</span> Begin Surveillance Session
+            </button>
+            <button id="btnAbandonSession" class="btn btn-danger" style="display: none;">
+              <span>✖</span> Abandon Session
+            </button>
+          </div>
+
+          <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">
+            <p><strong>Enforcement Rules:</strong></p>
+            <p>Do not switch browser tabs or minimize window during focus.</p>
+            <p>Any loss of focus activates a strict <strong>15-second visual grace countdown</strong>.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Gamification & Dashboard Tab -->
+    <section id="dashboardTab" class="tab-pane">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Current Streak</span>
+          <span id="statStreak" class="stat-value" style="color: var(--accent-amber);">0 Days</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Total Focus Logged</span>
+          <span id="statFocusHours" class="stat-value" style="color: var(--accent-cyan);">0.0 Hrs</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Completion Rate</span>
+          <span id="statCompletionRate" class="stat-value" style="color: var(--accent-green);">0%</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Total Sessions</span>
+          <span id="statTotalSessions" class="stat-value">0</span>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <h3>Session Audit Log</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Planned Duration</th>
+              <th>Status</th>
+              <th>Outcome</th>
+            </tr>
+          </thead>
+          <tbody id="sessionHistoryBody">
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-muted);">No recorded sessions yet. Start a focus period to log data.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Auth Modal -->
+  <div id="authModal" class="modal-overlay">
+    <div class="modal-content">
+      <button id="btnCloseAuth" class="modal-close">&times;</button>
+      <h2 id="authModalTitle" style="margin-bottom: 1rem;">Sign In</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        Authenticate to sync streaks and focus metrics with the database.
+      </p>
+
+      <form id="authForm">
+        <div class="form-group">
+          <label for="authEmail">Email Address</label>
+          <input type="email" id="authEmail" class="form-input" required placeholder="agent@agency.org">
+        </div>
+        <div class="form-group">
+          <label for="authPassword">Password</label>
+          <input type="password" id="authPassword" class="form-input" required placeholder="••••••••">
+        </div>
+
+        <button type="submit" id="btnSubmitAuth" class="btn btn-primary" style="width: 100%;">Sign In</button>
+      </form>
+
+      <div style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+        <span id="authToggleText">Don't have an account?</span>
+        <button id="btnToggleAuthMode" style="background: none; border: none; color: var(--accent-cyan); cursor: pointer; text-decoration: underline; margin-left: 0.25rem;">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/camera.js"></script>
+  <script src="/static/js/timer.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
